@@ -15,6 +15,10 @@ import { AuthProvider } from './AuthContext';
 import Unauthorized from './components/Unauthorized';
 import MentorHome from './components/MentorHome';
 import MentoriaDetail from './components/MentoriaDetail';
+import PerfilMentor from './components/PerfilMentor';
+import MentorAvailability from './components/MentorAvailability';
+import MentorRequests from './components/MentorRequests';
+import MentorHistory from './components/MentorHistory';
 
 AOS.init();
 
@@ -24,6 +28,10 @@ function App() {
       <Router>
         <Routes>
           <Route path='/' element={<Home />} />
+          <Route path='/mentor-history' element={<MentorHistory />} />
+          <Route path='/mentor-request' element={<MentorRequests />} />
+          <Route path='/mentor-availability' element={<MentorAvailability />} />
+          <Route path='/mentor-perfil' element={<PerfilMentor />} />
           <Route path='/mentor-home' element={<MentorHome />} />
           <Route path='/mentor-detail' element={<MentoriaDetail />} />
           <Route path='/register' element={<Register />} />
