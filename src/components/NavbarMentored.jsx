@@ -11,13 +11,13 @@ const NavbarMentored = () => (
       <div className="collapse navbar-collapse" id="navbarNav">
         <ul className="navbar-nav ms-auto">
           <li className="nav-item">
-            <Link className="nav-link" to="/home-support">Painel de Gerenciamento</Link>
+            <Link className="nav-link" to="/mentored-main">Agendar Mentorias</Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/mentorings-support">Mentorias</Link>
+            <Link className="nav-link" to="/mentored-manage">Gerenciar Mentorias</Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/contacts-support">Contatos</Link>
+            <Link className="nav-link" to="/mentored-review">Avaliar Mentorias</Link>
           </li>
         </ul>
       </div>

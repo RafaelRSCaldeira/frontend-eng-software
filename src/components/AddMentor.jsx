@@ -27,6 +27,34 @@ const AddMentor = () => {
     );
   }
 
+  useEffect(() => {
+    if (id) {
+      // Substitua isso por uma chamada à API real, como fetch(`/api/mentores/${id}`)
+      const fetchData = async () => {
+        const mockMentor = {
+          id: id,
+          name: "João Silva",
+          email: "joao@email.com",
+          password: "senhaSegura123", // cuidado: em produção, a senha não vem da API
+          areas_of_activity: ["Cybersegurança", "Redes de Computadores"],
+          current_company: "Microsoft",
+          certificates: ["CCIE", "HCIE"],
+          occupation: "Líder de Equipe"
+        };
+
+        setName(mockMentor.name);
+        setEmail(mockMentor.email);
+        setPassword(mockMentor.password);
+        setAreasOfActivity(mockMentor.areas_of_activity.join(", "));
+        setCurrentCompany(mockMentor.current_company);
+        setCertificates(mockMentor.certificates.join(", "));
+        setOccupation(mockMentor.occupation);
+      };
+
+      fetchData();
+    }
+  }, [id]);
+
   return (
     <>
       <style>{`
@@ -181,7 +209,7 @@ const AddMentor = () => {
               <button
                 type="button"
                 className="btn btn-outline-secondary mt-2 ms-2"
-                onClick={() => navigator("/users/support")}
+                onClick={() => navigator("/users/mentor")}
               >
                 ← Voltar
               </button>

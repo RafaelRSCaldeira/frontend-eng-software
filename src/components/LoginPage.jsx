@@ -40,12 +40,12 @@ function LoginPage() {
     handleLogin(formData);
     console.log(role);
     if(role === "Mentor") {
-      navigator(`/home-mentor`);
+      navigator(`/users-mentor`);
     } else if(role === "Mentorado") {
       console.log("sad");
-      navigator(`/home-mentored`);
+      navigator(`/users-mentored`);
     } else if(role === "Suporte") {
-      navigator(`/home-support`);
+      navigator(`/users-support`);
     } else {
       navigator(`/`)
     }

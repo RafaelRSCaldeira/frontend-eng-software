@@ -27,6 +27,9 @@ const SupportMentorList = () => {
     ]);
   }, []);
 
+  const handleEdit = (id) => {
+    navigator(`/users/edit-mentor/${id}`)
+  }
   const formatDate = (isoDate) => {
     const date = new Date(isoDate);
     return date.toLocaleString('pt-BR');
@@ -41,7 +44,7 @@ const SupportMentorList = () => {
         <div className="mb-3" data-aos="fade-down" data-aos-delay="100">
           <button
             className="btn btn-outline-secondary d-flex align-items-center gap-2"
-            onClick={() => navigator("/home-support")}
+            onClick={() => navigator("/users-support")}
           >
             <i className="bi bi-arrow-left"></i> Voltar
           </button>
@@ -100,7 +103,10 @@ const SupportMentorList = () => {
                   <td>{formatDate(mentor.updated_at)}</td>
                   <td>
                     <div className="d-flex gap-2">
-                      <button className="btn btn-outline-info btn-sm">Editar</button>
+                      <button className="btn btn-outline-info btn-sm"
+                      onClick={() => handleEdit(mentor.id)}>
+                        Editar
+                      </button>
                       <button className="btn btn-outline-danger btn-sm">Excluir</button>
                     </div>
                   </td>

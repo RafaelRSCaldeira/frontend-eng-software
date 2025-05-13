@@ -25,7 +25,7 @@ const SupportSupportList = () => {
         <div className="mb-3" data-aos="fade-down" data-aos-delay="100">
           <button
             className="btn btn-outline-secondary d-flex align-items-center gap-2"
-            onClick={() => navigator("/home-support")}
+            onClick={() => navigator("/users-support")}
           >
             <i className="bi bi-arrow-left"></i> Voltar
           </button>

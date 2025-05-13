@@ -142,7 +142,7 @@ const AddSupport = () => {
               </div>
 
               <button className="btn btn-gradient w-100 mt-3"
-              onClick={() => navigator("/users/mentored")}>
+              onClick={() => navigator("/users/support")}>
                 {id ? "Atualizar" : "Cadastrar"}
               </button>
 

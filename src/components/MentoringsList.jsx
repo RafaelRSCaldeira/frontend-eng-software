@@ -3,25 +3,67 @@ import { useNavigate } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
-const SupportMentoredList = () => {
-  const [mentoreds, setMentoreds] = useState([]);
+const MentoringsList = () => {
+  const [mentorings, setMentorings] = useState([]);
   const navigator = useNavigate();
+  const location = window.location;
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
 
     // Dados de exemplo mockados — substitua pela API real
-    setMentoreds([
-      {
-        id: 1,
-        name: "João Silva",
-        email: "joao@email.com",
-        interests: ["Tecnologia da Informação", "Redes de Computadores"],
-        created_at: "2025-03-23T12:00:00Z",
-        updated_at: "2025-03-23T12:30:00Z",
-        rating: 3.0
-      }
-    ]);
+    setMentorings([
+  {
+    "id": 1,
+    "id_mentor": 1,
+    "id_mentored": 1,
+    "id_topic": 1,
+    "status": "scheduled",
+    "date": "2025-03-23T12:00:00Z",
+    "created_at": "2025-03-23T12:00:00Z",
+    "updated_at": "2025-03-23T12:30:00Z"
+  },
+  {
+    "id": 2,
+    "id_mentor": 2,
+    "id_mentored": 3,
+    "id_topic": 4,
+    "status": "completed",
+    "date": "2025-03-24T10:00:00Z",
+    "created_at": "2025-03-23T13:00:00Z",
+    "updated_at": "2025-03-24T11:30:00Z"
+  },
+  {
+    "id": 3,
+    "id_mentor": 1,
+    "id_mentored": 2,
+    "id_topic": 2,
+    "status": "cancelled",
+    "date": "2025-03-25T15:30:00Z",
+    "created_at": "2025-03-24T09:00:00Z",
+    "updated_at": "2025-03-25T08:00:00Z"
+  },
+  {
+    "id": 4,
+    "id_mentor": 3,
+    "id_mentored": 4,
+    "id_topic": 3,
+    "status": "scheduled",
+    "date": "2025-03-26T14:00:00Z",
+    "created_at": "2025-03-25T10:00:00Z",
+    "updated_at": "2025-03-25T10:15:00Z"
+  },
+  {
+    "id": 5,
+    "id_mentor": 2,
+    "id_mentored": 5,
+    "id_topic": 5,
+    "status": "completed",
+    "date": "2025-03-27T09:00:00Z",
+    "created_at": "2025-03-26T08:00:00Z",
+    "updated_at": "2025-03-27T10:00:00Z"
+  }
+]);
   }, []);
 
   const formatDate = (isoString) => {
@@ -70,25 +112,25 @@ const SupportMentoredList = () => {
             <thead className="table-light text-dark">
               <tr>
                 <th>ID</th>
-                <th>Nome</th>
-                <th>Email</th>
-                <th>Interesses</th>
-                <th>Avaliação</th>
+                <th>ID Mentor</th>
+                <th>ID Mentored</th>
+                <th>Status</th>
+                <th>Data</th>
                 <th>Criado em</th>
                 <th>Atualizado em</th>
                 <th>Ações</th>
               </tr>
             </thead>
             <tbody>
-              {mentoreds.map((mentored) => (
-                <tr key={mentored.id}>
-                  <td>{mentored.id}</td>
-                  <td>{mentored.name}</td>
-                  <td>{mentored.email}</td>
-                  <td>{mentored.interests?.join(', ') || '-'}</td>
-                  <td>{mentored.rating?.toFixed(1) || '-'}</td>
-                  <td>{formatDate(mentored.created_at)}</td>
-                  <td>{formatDate(mentored.updated_at)}</td>
+              {mentorings.map((mentoring) => (
+                <tr key={mentoring.id}>
+                  <td>{mentoring.id}</td>
+                  <td>{mentoring.id_mentor}</td>
+                  <td>{mentoring.id_mentored}</td>
+                  <td>{mentoring.status}</td>
+                  <td>{mentoring.date}</td>
+                  <td>{mentoring.created_at}</td>
+                  <td>{mentoring.updated_at}</td>
                   <td>
                     <div className="d-flex gap-2">
                       <button className="btn btn-outline-info btn-sm">Editar</button>
@@ -97,7 +139,7 @@ const SupportMentoredList = () => {
                   </td>
                 </tr>
               ))}
-              {mentoreds.length === 0 && (
+              {mentorings.length === 0 && (
                 <tr>
                   <td colSpan="8" className="text-center py-4">
                     Nenhum suporte encontrado.
@@ -112,4 +154,4 @@ const SupportMentoredList = () => {
   );
 };
 
-export default SupportMentoredList;
+export default MentoringsList;

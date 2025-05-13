@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const AddMentored = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [interests, setInterests] = useState([]);
+  const [interests, setInterests] = useState("");
 
   const { id } = useParams();
   const navigator = useNavigate();
@@ -16,23 +16,6 @@ const AddMentored = () => {
     password: "",
   });
 
-  const availableInterests = [
-    "Tecnologia da Informação",
-    "Redes de Computadores",
-    "Desenvolvimento Web",
-    "Engenharia de Software",
-    "Cybersegurança",
-    "Inteligência Artificial",
-  ];
-
-  const handleInterestChange = (e) => {
-    const options = Array.from(e.target.options);
-    const selectedValues = options
-      .filter((opt) => opt.selected)
-      .map((opt) => opt.value);
-    setInterests(selectedValues);
-  };
-
   function pageTitle() {
     return (
       <h2 className="text-center text-light fw-bold mb-4">
@@ -40,6 +23,32 @@ const AddMentored = () => {
       </h2>
     );
   }
+
+  useEffect(() => {
+    if (id) {
+      // Substitua isso por uma chamada real à API
+      const fetchData = async () => {
+        const mockMentored = {
+          id: id,
+          name: "Maria Oliveira",
+          email: "maria@email.com",
+          password: "senhaForte456",
+          interests: [
+            "Desenvolvimento Web",
+            "Engenharia de Software",
+            "Cybersegurança"
+          ]
+        };
+
+        setName(mockMentored.name);
+        setEmail(mockMentored.email);
+        setPassword(mockMentored.password);
+        setInterests(mockMentored.interests.join(", "));
+      };
+
+      fetchData();
+    }
+  }, [id]);
 
   return (
     <>
@@ -72,7 +81,6 @@ const AddMentored = () => {
 
         .form-control.custom-input::placeholder {
           color: #ffffff;
-          opacity: 1;
         }
 
         .form-control.custom-input:focus {
@@ -112,81 +120,61 @@ const AddMentored = () => {
                 <label className="form-label">Nome</label>
                 <input
                   type="text"
-                  name="name"
                   placeholder="Digite o nome do mentorado"
-                  className={`form-control custom-input ${
-                    errors.name ? "is-invalid" : ""
-                  }`}
+                  className={`form-control custom-input ${errors.name ? "is-invalid" : ""}`}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
-                {errors.name && (
-                  <div className="invalid-feedback">{errors.name}</div>
-                )}
+                {errors.name && <div className="invalid-feedback">{errors.name}</div>}
               </div>
 
               <div className="mb-3">
                 <label className="form-label">Email</label>
                 <input
                   type="email"
-                  name="email"
                   placeholder="Digite o e-mail"
-                  className={`form-control custom-input ${
-                    errors.email ? "is-invalid" : ""
-                  }`}
+                  className={`form-control custom-input ${errors.email ? "is-invalid" : ""}`}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                {errors.email && (
-                  <div className="invalid-feedback">{errors.email}</div>
-                )}
+                {errors.email && <div className="invalid-feedback">{errors.email}</div>}
               </div>
 
               <div className="mb-3">
                 <label className="form-label">Senha</label>
                 <input
                   type="password"
-                  name="password"
                   placeholder="Digite a senha"
-                  className={`form-control custom-input ${
-                    errors.password ? "is-invalid" : ""
-                  }`}
+                  className={`form-control custom-input ${errors.password ? "is-invalid" : ""}`}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                {errors.password && (
-                  <div className="invalid-feedback">{errors.password}</div>
-                )}
+                {errors.password && <div className="invalid-feedback">{errors.password}</div>}
               </div>
 
               <div className="mb-3">
                 <label className="form-label">Interesses</label>
-                <select
-                  multiple
+                <input
+                  type="text"
+                  placeholder="Ex: Desenvolvimento Web, IA"
                   className="form-control custom-input"
                   value={interests}
-                  onChange={handleInterestChange}
-                >
-                  {availableInterests.map((interest) => (
-                    <option key={interest} value={interest}>
-                      {interest}
-                    </option>
-                  ))}
-                </select>
-                <small className="text-light">
-                  Segure Ctrl (ou Cmd) para selecionar múltiplos.
-                </small>
+                  onChange={(e) => setInterests(e.target.value)}
+                />
               </div>
 
-              <button type="submit" className="btn btn-gradient w-100 mt-3"
-              onClick={() => navigator("/users/mentored")}>
+              <button
+                type="submit"
+                className="btn btn-gradient w-100 mt-3"
+                onClick={() => navigator("/users/mentored")}
+              >
                 {id ? "Atualizar" : "Cadastrar"}
               </button>
 
               <button
                 type="button"
                 className="btn btn-outline-secondary mt-2 ms-2"
-                onClick={() => navigator("/users/support")}
+                onClick={() => navigator("/users/mentored")}
               >
                 ← Voltar
               </button>

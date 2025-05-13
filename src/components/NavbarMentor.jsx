@@ -11,7 +11,7 @@ const NavbarMentor = () => (
       <div className="collapse navbar-collapse" id="navbarNav">
         <ul className="navbar-nav ms-auto">
           <li className="nav-item">
-            <Link className="nav-link" to="/home-support">Painel de Gerenciamento</Link>
+            <Link className="nav-link" to="/users-support">Painel de Gerenciamento</Link>
           </li>
           <li className="nav-item">
             <Link className="nav-link" to="/mentorings-support">Mentorias</Link>
