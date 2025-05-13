@@ -13,6 +13,8 @@ import ScheduleMentoring from './components/ScheduleMentoring';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './AuthContext';
 import Unauthorized from './components/Unauthorized';
+import MentorHome from './components/MentorHome';
+import MentoriaDetail from './components/MentoriaDetail';
 
 AOS.init();
 
@@ -22,6 +24,8 @@ function App() {
       <Router>
         <Routes>
           <Route path='/' element={<Home />} />
+          <Route path='/mentor-home' element={<MentorHome />} />
+          <Route path='/mentor-detail' element={<MentoriaDetail />} />
           <Route path='/register' element={<Register />} />
           <Route path='/register-mentor' element={<RegisterMentor />} />
           <Route path='/register-mentored' element={<RegisterMentored />} />
