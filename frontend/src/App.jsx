@@ -3,16 +3,21 @@ import React from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Register from './components/Register';
-import RegisterMentor from './components/RegisterMentor';
 import RegisterMentored from './components/RegisterMentored';
-import Main from './components/Main';
+import MainMentored from './components/MainMentored';
 import Login from './components/Login';
 import LoginPage from './components/LoginPage';
 import ScheduleMentoring from './components/ScheduleMentoring';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './AuthContext';
 import Unauthorized from './components/Unauthorized';
+import MainSupport from './components/MainSupport';
+import SupportMentoredList from './components/SupportMentoredList';
+import SupportSupportList from './components/SupportSupportList';
+import AddSupport from './components/AddSupport';
+import AddMentor from './components/AddMentor';
+import AddMentored from './components/AddMentored';
+import SupportMentorList from './components/SupportMentorList';
 
 AOS.init();
 
@@ -22,9 +27,7 @@ function App() {
       <Router>
         <Routes>
           <Route path='/' element={<Home />} />
-          <Route path='/register' element={<Register />} />
-          <Route path='/register-mentor' element={<RegisterMentor />} />
-          <Route path='/register-mentored' element={<RegisterMentored />} />
+          <Route path='/register' element={<RegisterMentored />} />
           <Route path='/login' element={<Login />} />
           <Route path='/login-page' element={<LoginPage />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
@@ -37,10 +40,66 @@ function App() {
             } 
           />
           <Route 
-            path='/home' 
+            path='/home-mentored' 
             element={
               <ProtectedRoute allowedRoles={["Mentorado"]}>
-                <Main />
+                <MainMentored />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/home-support' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <MainSupport />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users/mentored' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <SupportMentoredList />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users/mentor' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <SupportMentorList />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users/support' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <SupportSupportList />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users/add-support' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <AddSupport />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users/add-mentor' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <AddMentor />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users/add-mentored' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <AddMentored />
               </ProtectedRoute>
             } 
           />

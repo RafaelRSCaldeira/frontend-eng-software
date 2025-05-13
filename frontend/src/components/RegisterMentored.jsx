@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { useAuth } from "../AuthContext";
 
 function RegisterMentored() {
   const navigator = useNavigate();
+  const location = useLocation();
+  const role = location.state?.role || "none";
+
+  const { login } = useAuth();
+
   const [formData, setFormData] = useState({
     name: "",
     mail: "",
     pwd: "",
-    occupation: "",
-    currentCompany: "",
-    areasOfInterest: "",
+    role: role,
   });
 
   useEffect(() => {
@@ -27,8 +31,8 @@ function RegisterMentored() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
-    navigator("/home");
+
+    navigator("/home-mentored");
   };
 
   return (
@@ -104,7 +108,7 @@ function RegisterMentored() {
           <button
             type="button"
             className="btn btn-outline-light mb-4"
-            onClick={() => navigator("/register")}
+            onClick={() => navigator("/")}
             data-aos="fade-left"
           >
             ← Voltar
@@ -170,9 +174,10 @@ function RegisterMentored() {
                 required
               ></textarea>
             </div>
+
             <button
               type="submit"
-              className="btn btn-gradient w-100 py-2"
+              className="btn btn-gradient w-100 py-2 mb-3"
               data-aos="zoom-in"
               data-aos-delay="700"
             >
@@ -180,6 +185,17 @@ function RegisterMentored() {
               Cadastrar Mentorado
             </button>
           </form>
+
+          {/* ✅ Botão "Ir para Login" abaixo do formulário */}
+          <div className="text-center" data-aos="fade-up" data-aos-delay="800">
+            <button
+              type="button"
+              className="btn btn-outline-info"
+              onClick={() => navigator("/login")}
+            >
+              Já tem uma conta? Ir para Login
+            </button>
+          </div>
         </div>
       </div>
     </>

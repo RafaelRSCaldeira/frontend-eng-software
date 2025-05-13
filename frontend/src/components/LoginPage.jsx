@@ -7,12 +7,12 @@ import "aos/dist/aos.css";
 function LoginPage() {
 
   const location = useLocation();
-  const user = location.state?.user || "none";
+  const role = location.state?.user || "none";
 
   const { login } = useAuth();
 
-  function handleLogin(role) {
-    login(role);
+  function handleLogin(data) {
+    login(data);
   }
 
   const navigator = useNavigate();
@@ -20,6 +20,7 @@ function LoginPage() {
     name: "",
     mail: "",
     pwd: "",
+    role: "",
     occupation: "",
     currentCompany: "",
     areasOfInterest: "",
@@ -33,13 +34,24 @@ function LoginPage() {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
+      role: role,
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleLogin(user);
-    navigator("/home");
+    handleLogin(formData);
+    console.log(role);
+    if(role === "Mentor") {
+      navigator(`/home-mentor`);
+    } else if(role === "Mentorado") {
+      console.log("sad");
+      navigator(`/home-mentored`);
+    } else if(role === "Suporte") {
+      navigator(`/home-support`);
+    } else {
+      navigator(`/`)
+    }
   };
 
   return (
@@ -110,7 +122,7 @@ function LoginPage() {
             className="text-center mb-4 fw-bold text-light"
             data-aos="fade-down"
           >
-            Login de {user}
+            Login de {role}
           </h2>
           <button
             type="button"
