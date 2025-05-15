@@ -9,6 +9,7 @@ const AddMentor = () => {
   const [currentCompany, setCurrentCompany] = useState("");
   const [certificates, setCertificates] = useState("");
   const [occupation, setOccupation] = useState("");
+  const [role, setRole] = useState("");
 
   const { id } = useParams();
   const navigator = useNavigate();
@@ -17,6 +18,11 @@ const AddMentor = () => {
     name: "",
     email: "",
     password: "",
+    areasOfActivity: "",
+    currentCompany: "",
+    certificates: "",
+    occupation: "",
+    role: "",
   });
 
   function pageTitle() {
@@ -27,28 +33,109 @@ const AddMentor = () => {
     );
   }
 
+  function showDropdown() {
+    if(id) {
+      return (
+        <div className="mb-3">
+          <label className="form-label">Papel</label>
+          <select
+            className="form-select custom-select"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+          >
+            <option value="">Selecione um papel</option>
+            <option value="MENTOR">Mentor</option>
+            <option value="MENTORADO">Mentorado</option>
+            <option value="SUPORTE">Suporte</option>
+          </select>
+        </div>
+      )
+    }
+    
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault(); // Impede reload do formulário
+
+    const newErrors = {};
+
+    if (!name.trim()) newErrors.name = "Nome é obrigatório.";
+    if (!email.trim()) newErrors.email = "Email é obrigatório.";
+    if (!password.trim()) newErrors.password = "Senha é obrigatória.";
+    if (!areasOfActivity.trim()) newErrors.areasOfActivity = "Áreas de atuação são obrigatórias.";
+    if (!currentCompany.trim()) newErrors.currentCompany = "Empresa atual é obrigatória.";
+    if (!certificates.trim()) newErrors.certificates = "Certificados são obrigatórios.";
+    if (!occupation.trim()) newErrors.occupation = "Ocupação é obrigatória.";
+    if (id && !role.trim()) newErrors.role = "Papel é obrigatório.";
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      return; // Se houver erros, não envia
+    }
+
+    const bodyData = {
+      name,
+      email,
+      password,
+      areasOfActivity,
+      currentCompany,
+      certificates,
+      occupation,
+      role
+    };
+
+    if(!id) {
+      bodyData.role = "Mentor";
+    }
+
+    const url = id
+      ? `http://backendsuporte-e5h4aqaxcnhkc8hk.brazilsouth-01.azurewebsites.net/api/v1/users/${id}`
+      : `http://backendsuporte-e5h4aqaxcnhkc8hk.brazilsouth-01.azurewebsites.net/api/v1/users`;
+
+    const method = id ? "PUT" : "POST";
+
+    fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bodyData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Resposta:", data);
+        navigator("/users/mentor");
+      })
+      .catch((error) => {
+        console.error("Erro ao enviar dados:", error);
+      });
+  }
+
   useEffect(() => {
     if (id) {
-      // Substitua isso por uma chamada à API real, como fetch(`/api/mentores/${id}`)
       const fetchData = async () => {
-        const mockMentor = {
-          id: id,
-          name: "João Silva",
-          email: "joao@email.com",
-          password: "senhaSegura123", // cuidado: em produção, a senha não vem da API
-          areas_of_activity: ["Cybersegurança", "Redes de Computadores"],
-          current_company: "Microsoft",
-          certificates: ["CCIE", "HCIE"],
-          occupation: "Líder de Equipe"
-        };
+        fetch(`https://backendsuporte-e5h4aqaxcnhkc8hk.brazilsouth-01.azurewebsites.net/api/v1/users/${id}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Erro na requisição: ' + response.status);
+            }
+            return response.json(); // converte a resposta para JSON
+          })
+          .then(data => {
+            console.log('Dados recebidos:', data);
+            setName(data.name);
+            setEmail(data.email);
+            setPassword(data.password);
+            setAreasOfActivity(data.areasOfActivity);
+            setCurrentCompany(data.currentCompany);
+            setCertificates(data.certificates);
+            setOccupation(data.occupation);
+            setRole(data.role);
+          })
+          .catch(error => {
+            console.error('Erro ao chamar API:', error);
+          });
 
-        setName(mockMentor.name);
-        setEmail(mockMentor.email);
-        setPassword(mockMentor.password);
-        setAreasOfActivity(mockMentor.areas_of_activity.join(", "));
-        setCurrentCompany(mockMentor.current_company);
-        setCertificates(mockMentor.certificates.join(", "));
-        setOccupation(mockMentor.occupation);
+        
       };
 
       fetchData();
@@ -58,6 +145,19 @@ const AddMentor = () => {
   return (
     <>
       <style>{`
+        .form-select.custom-select {
+          background-color: #2b2d42;
+          border: 1px solid #444;
+          color: #fff;
+          border-radius: 0.5rem;
+          transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-select.custom-select:focus {
+          border-color: #7f5af0;
+          box-shadow: 0 0 0 0.2rem rgba(127, 90, 240, 0.25);
+          background-color: #3b3f58;
+        }
         .page-background {
           background-color: #121212;
           min-height: 100vh;
@@ -120,7 +220,7 @@ const AddMentor = () => {
         <div className="card custom-card p-4">
           {pageTitle()}
           <div className="card-body">
-            <form>
+            <form onSubmit={ handleSubmit }>
               <div className="mb-3">
                 <label className="form-label">Nome</label>
                 <input
@@ -162,10 +262,11 @@ const AddMentor = () => {
                 <input
                   type="text"
                   placeholder="Ex: Cybersegurança, Redes de Computadores"
-                  className="form-control custom-input"
+                  className={`form-control custom-input ${errors.areasOfActivity ? "is-invalid" : ""}`}
                   value={areasOfActivity}
                   onChange={(e) => setAreasOfActivity(e.target.value)}
                 />
+                {errors.areasOfActivity && <div className="invalid-feedback">{errors.areasOfActivity}</div>}
               </div>
 
               <div className="mb-3">
@@ -173,10 +274,11 @@ const AddMentor = () => {
                 <input
                   type="text"
                   placeholder="Ex: Microsoft"
-                  className="form-control custom-input"
+                  className={`form-control custom-input ${errors.currentCompany ? "is-invalid" : ""}`}
                   value={currentCompany}
                   onChange={(e) => setCurrentCompany(e.target.value)}
                 />
+                {errors.currentCompany && <div className="invalid-feedback">{errors.currentCompany}</div>}
               </div>
 
               <div className="mb-3">
@@ -184,10 +286,11 @@ const AddMentor = () => {
                 <input
                   type="text"
                   placeholder="Ex: CCIE, HCIE"
-                  className="form-control custom-input"
+                  className={`form-control custom-input ${errors.certificates ? "is-invalid" : ""}`}
                   value={certificates}
                   onChange={(e) => setCertificates(e.target.value)}
                 />
+                {errors.certificates && <div className="invalid-feedback">{errors.certificates}</div>}
               </div>
 
               <div className="mb-3">
@@ -195,14 +298,17 @@ const AddMentor = () => {
                 <input
                   type="text"
                   placeholder="Ex: Líder de Equipe"
-                  className="form-control custom-input"
+                  className={`form-control custom-input ${errors.occupation ? "is-invalid" : ""}`}
                   value={occupation}
                   onChange={(e) => setOccupation(e.target.value)}
                 />
+                {errors.occupation && <div className="invalid-feedback">{errors.occupation}</div>}
               </div>
 
-              <button className="btn btn-gradient w-100 mt-3"
-              onClick={() => navigator("/users/mentor")}>
+              {showDropdown()}
+              {errors.role && <div className="invalid-feedback d-block">{errors.role}</div>}
+
+              <button type="submit" className="btn btn-gradient w-100 mt-3">
                 {id ? "Atualizar" : "Cadastrar"}
               </button>
 
@@ -217,6 +323,7 @@ const AddMentor = () => {
           </div>
         </div>
       </div>
+
     </>
   );
 };

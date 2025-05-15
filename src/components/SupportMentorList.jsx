@@ -4,27 +4,35 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 
 const SupportMentorList = () => {
+  const [loading, setLoading] = useState(true);
   const [mentors, setMentors] = useState([]);
   const navigator = useNavigate();
 
+  function getMentors() {
+    fetch('https://backendsuporte-e5h4aqaxcnhkc8hk.brazilsouth-01.azurewebsites.net/api/v1/users')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erro na requisição: ' + response.status);
+        }
+        return response.json(); // converte a resposta para JSON
+      })
+      .then(data => {
+        console.log('Dados recebidos:', data);
+        setLoading(false);
+        setMentors(data);
+      })
+      .catch(error => {
+        console.error('Erro ao chamar API:', error);
+      });
+  }
+
+  function handleDelete(id) {
+    console.log(`usuario deletado: ${id}`);
+  }
+
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
-
-    // Exemplo de dados mockados (remova isso e substitua por chamada à API real)
-    setMentors([
-      {
-        id: 1,
-        name: 'João Silva',
-        email: 'joao@email.com',
-        areas_of_activity: ['Cybersegurança', 'Redes de Computadores'],
-        current_company: 'Microsoft',
-        certificates: ['CCIE', 'HCIE'],
-        occupation: 'Líder de Equipe',
-        created_at: '2025-03-23T12:00:00Z',
-        updated_at: '2025-03-23T12:30:00Z',
-        rating: 3.0,
-      },
-    ]);
+    getMentors();
   }, []);
 
   const handleEdit = (id) => {
@@ -89,30 +97,33 @@ const SupportMentorList = () => {
               </tr>
             </thead>
             <tbody>
-              {mentors.map((mentor) => (
+              {mentors && mentors.map((mentor) => (
                 <tr key={mentor.id}>
                   <td>{mentor.id}</td>
                   <td>{mentor.name}</td>
                   <td>{mentor.email}</td>
-                  <td>{mentor.areas_of_activity.join(', ')}</td>
+                  <td>{mentor.areas_of_activity}</td>
                   <td>{mentor.current_company}</td>
-                  <td>{mentor.certificates.join(', ')}</td>
+                  <td>{mentor.certificates}</td>
                   <td>{mentor.occupation}</td>
-                  <td>{mentor.rating.toFixed(1)}</td>
-                  <td>{formatDate(mentor.created_at)}</td>
-                  <td>{formatDate(mentor.updated_at)}</td>
+                  <td>{mentor.rating}</td>
+                  <td>{mentor.created_at}</td>
+                  <td>{mentor.updated_at}</td>
                   <td>
                     <div className="d-flex gap-2">
                       <button className="btn btn-outline-info btn-sm"
                       onClick={() => handleEdit(mentor.id)}>
                         Editar
                       </button>
-                      <button className="btn btn-outline-danger btn-sm">Excluir</button>
+                      <button className="btn btn-outline-danger btn-sm"
+                      onClick={() => handleDelete(mentor.id)}>
+                        Excluir
+                      </button>
                     </div>
                   </td>
                 </tr>
               ))}
-              {mentors.length === 0 && (
+              {mentors && mentors.length === 0 && (
                 <tr>
                   <td colSpan="11" className="text-center py-4">
                     Nenhum suporte encontrado.
