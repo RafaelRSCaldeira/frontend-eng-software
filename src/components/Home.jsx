@@ -1,48 +1,47 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import HeroSection from "./HeroSection";
 import FeaturesSection from "./FeaturesSection";
 import TestimonialsSection from "./TestimonialsSection";
 import SignupSection from "./SignupSection";
 import Contact from "./Contact";
-import { useAuth } from "../AuthContext";
-import axios from "axios";
-import '../App.css'; 
+import '../App.css';
 
 const Home = () => {
   const [currentSection, setCurrentSection] = useState(0);
   const sections = [HeroSection, FeaturesSection, TestimonialsSection, SignupSection, Contact];
 
-  const { email, setMentorado } = useAuth();
-
-  useEffect(() => {
-    if (email) {
-      axios
-        .get(`http://44.212.29.224:8000/get-user/${encodeURIComponent(email)}`)
-        .then((response) => {
-          console.log("Resposta completa do axios:", response);
-          console.log("Mentorado recebido:", response.data);
-          setMentorado(response.data);
-        })
-        .catch((error) => {
-          console.error("Erro ao buscar mentorado:", error);
-        });
-    }
-  }, [email, setMentorado]);
+  const isScrollingRef = useRef(false); // Evita scrolls repetidos
 
   useEffect(() => {
     const handleWheel = (event) => {
+      // Limita rolagens sucessivas
+      if (isScrollingRef.current) return;
+
+      const threshold = 0;
+      if (Math.abs(event.deltaY) < threshold) return;
+
+      isScrollingRef.current = true;
+
       if (event.deltaY > 0) {
+        // Scroll para baixo
         if (currentSection < sections.length - 1) {
           setCurrentSection((prev) => prev + 1);
         }
       } else {
+        // Scroll para cima
         if (currentSection > 0) {
           setCurrentSection((prev) => prev - 1);
         }
       }
+
+      // Tempo de espera antes de permitir novo scroll
+      setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 200); // ajuste conforme necessário
     };
 
-    window.addEventListener("wheel", handleWheel, { passive: true });
+    window.addEventListener("wheel", handleWheel, { passive: false });
+
     return () => {
       window.removeEventListener("wheel", handleWheel);
     };

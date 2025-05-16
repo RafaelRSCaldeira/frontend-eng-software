@@ -33,7 +33,11 @@ function Login() {
               <p className="mb-4" data-aos="fade-up" data-aos-delay="100">
                 Seja um mentor, mentorado ou suporte. Escolha abaixo a sua opção.
               </p>
-              <div className="d-flex justify-content-around mb-4" data-aos="fade-up" data-aos-delay="200">
+              <div
+                className="d-flex justify-content-around mb-4 flex-wrap gap-3"
+                data-aos="fade-up"
+                data-aos-delay="200"
+              >
                 <Link
                   to="/login-page"
                   state={{ user: "Mentor" }}
@@ -54,6 +58,14 @@ function Login() {
                   className="btn btn-outline-light btn-lg px-5 py-3 w-45 border-2 rounded-3"
                 >
                   Login de Suporte
+                </Link>
+              </div>
+
+              {/* ✅ Botão de Cadastrar */}
+              <div data-aos="fade-up" data-aos-delay="400">
+                <p className="mb-2">Ainda não possui uma conta?</p>
+                <Link to="/register" className="btn btn-info fw-bold">
+                  Cadastrar-se
                 </Link>
               </div>
             </div>

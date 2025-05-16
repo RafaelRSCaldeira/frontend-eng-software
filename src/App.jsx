@@ -2,11 +2,9 @@ import Home from './components/Home';
 import React from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Register from './components/Register';
-import RegisterMentor from './components/RegisterMentor';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import RegisterMentored from './components/RegisterMentored';
-import Main from './components/Main';
+import MainMentored from './components/MainMentored';
 import Login from './components/Login';
 import LoginPage from './components/LoginPage';
 import ScheduleMentoring from './components/ScheduleMentoring';
@@ -24,9 +22,7 @@ function App() {
       <Router>
         <Routes>
           <Route path='/' element={<Home />} />
-          <Route path='/register' element={<Register />} />
-          <Route path='/register-mentor' element={<RegisterMentor />} />
-          <Route path='/register-mentored' element={<RegisterMentored />} />
+          <Route path='/register' element={<RegisterMentored />} />
           <Route path='/login' element={<Login />} />
           <Route path='/login-page' element={<LoginPage />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
@@ -41,10 +37,117 @@ function App() {
             } 
           />
           <Route 
-            path='/home' 
+            path='/users-mentored' 
             element={
               <ProtectedRoute allowedRoles={["Mentorado"]}>
-                <Main />
+                <MainMentored />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users-support' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <MainSupport />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users/mentored' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <SupportMentoredList />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users/mentor' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <SupportMentorList />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users/support' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <SupportSupportList />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users/add-support' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <AddSupport />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users/add-mentor' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <AddMentor />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users/edit-mentor/:id' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <AddMentor />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users/edit-support/:id' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <AddSupport />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users/edit-mentored/:id' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <AddMentored />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users/add-mentored' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <AddMentored />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/mentorings' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <NavbarSupport />
+                <MentoringsList />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/mentorings/add-mentoring' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <NavbarSupport />
+                <AddMentoring />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/mentorings/edit-mentoring/:id' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <NavbarSupport />
+                <AddMentoring />
               </ProtectedRoute>
             } 
           />
