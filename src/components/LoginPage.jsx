@@ -23,7 +23,7 @@ function LoginPage() {
   });
 
   const [errorMsg, setErrorMsg] = useState("");
-
+  
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
   }, []);
