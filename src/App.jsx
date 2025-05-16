@@ -20,6 +20,7 @@ import AddMentored from './components/AddMentored';
 import SupportMentorList from './components/SupportMentorList';
 import MentoringsList from './components/MentoringsList';
 import NavbarSupport from './components/NavbarSupport';
+import AddMentoring from './components/AddMentoring'
 
 AOS.init();
 
@@ -135,6 +136,24 @@ function App() {
               <ProtectedRoute allowedRoles={["Suporte"]}>
                 <NavbarSupport />
                 <MentoringsList />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/mentorings/add-mentoring' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <NavbarSupport />
+                <AddMentoring />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/mentorings/edit-mentoring/:id' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <NavbarSupport />
+                <AddMentoring />
               </ProtectedRoute>
             } 
           />
