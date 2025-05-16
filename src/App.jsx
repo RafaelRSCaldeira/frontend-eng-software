@@ -13,6 +13,8 @@ import ScheduleMentoring from './components/ScheduleMentoring';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './AuthContext';
 import Unauthorized from './components/Unauthorized';
+import Feedback from './components/Feedback';
+import MentoringManagement from './components/MentoringManagement';
 
 AOS.init();
 
@@ -28,6 +30,8 @@ function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/login-page' element={<LoginPage />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="/mentoring-management" element={<MentoringManagement />} />
+          <Route path="/feedback" element={<Feedback />} />
           <Route 
             path='/schedule-mentoring' 
             element={
