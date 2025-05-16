@@ -2,7 +2,7 @@ import Home from './components/Home';
 import React from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import RegisterMentored from './components/RegisterMentored';
 import MainMentored from './components/MainMentored';
 import Login from './components/Login';
