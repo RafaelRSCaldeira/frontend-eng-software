@@ -6,11 +6,7 @@ Este é o frontend de um projeto desenvolvido em React utilizando Vite como bund
 ## 🚀 Tecnologias Utilizadas
 
 - [React](https://react.dev/)
-- [Vite](https://vitejs.dev/)
 - [Bootstrap](https://getbootstrap.com/) (v5.3.3)
-- [React Bootstrap](https://react-bootstrap.github.io/) (v2.10.9)
-- [React Router DOM](https://reactrouter.com/) (v7.6.0)
-- [React Icons](https://react-icons.github.io/react-icons/) (v5.5.0)
 - [AOS - Animate On Scroll](https://michalsnik.github.io/aos/) (v3.0.0-beta.6)
 
 ## 🛠️ Requisitos
