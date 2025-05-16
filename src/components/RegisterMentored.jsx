@@ -5,34 +5,152 @@ import "aos/dist/aos.css";
 import { useAuth } from "../AuthContext";
 
 function RegisterMentored() {
-  const navigator = useNavigate();
+  const navigate = useNavigate(); // renomeado para "navigate", padrão comum
   const location = useLocation();
-  const role = location.state?.role || "none";
+  const role = location.state?.role || "Mentorado"; // padrão mais apropriado
 
-  const { login } = useAuth();
+  const { login, user } = useAuth();
 
   const [formData, setFormData] = useState({
     name: "",
     mail: "",
     pwd: "",
     role: role,
+    areasOfInterest: "",
   });
+
+  const [errors, setErrors] = useState({});
+
+  const areasDeInteresse = [
+    "Desenvolvimento Frontend",
+    "Desenvolvimento Backend",
+    "DevOps",
+    "UX/UI Design",
+    "Análise de Dados",
+    "Inteligência Artificial",
+    "Segurança da Informação",
+    "Computação em Nuvem",
+  ];
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
   }, []);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [e.target.name]: "",
+      submit: "",
+      mail: "",
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const validate = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Por favor, informe seu nome completo.";
+    }
+
+    if (!formData.mail.trim()) {
+      newErrors.mail = "Por favor, informe seu e-mail.";
+    } else if (
+      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.mail.trim())
+    ) {
+      newErrors.mail = "E-mail inválido.";
+    }
+
+    if (!formData.pwd) {
+      newErrors.pwd = "Por favor, crie uma senha.";
+    } else if (formData.pwd.length < 6) {
+      newErrors.pwd = "A senha deve ter pelo menos 6 caracteres.";
+    }
+
+    if (!formData.areasOfInterest) {
+      newErrors.areasOfInterest = "Selecione uma área de interesse.";
+    }
+
+    return newErrors;
+  };
+
+  const checkEmailExists = async (email) => {
+    try {
+      const response = await fetch(
+        "https://backendsuporte-e5h4aqaxcnhkc8hk.brazilsouth-01.azurewebsites.net/api/v1/users/search-by-email",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      if (response.status === 404) {
+        return false; // não existe
+      }
+
+      if (!response.ok) {
+        throw new Error("Erro ao verificar email");
+      }
+
+      const data = await response.json();
+      return data !== null; // true se existir
+    } catch {
+      return false; // no erro, assume que não existe pra não bloquear
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    navigator("/home-mentored");
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    const emailExists = await checkEmailExists(formData.mail.trim());
+    if (emailExists) {
+      setErrors({ mail: "Este e-mail já está cadastrado." });
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "https://backendsuporte-e5h4aqaxcnhkc8hk.brazilsouth-01.azurewebsites.net/api/v1/users",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.mail,
+            password: formData.pwd,
+            areasOfActivity: formData.areasOfInterest,
+            role: formData.role, // usa o que veio do estado
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro ao cadastrar usuário");
+      }
+
+      const newUser = await response.json();
+
+      login(newUser); // login com os dados retornados do backend (não formData)
+      navigate("/users-mentored"); // navega para a página de mentorados
+    } catch (error) {
+      console.error("Erro ao cadastrar usuário:", error);
+      setErrors({ submit: "Erro ao cadastrar. Tente novamente mais tarde." });
+    }
   };
 
   return (
@@ -95,6 +213,12 @@ function RegisterMentored() {
           color: #cfd2dc;
           font-weight: 500;
         }
+
+        .error-message {
+          color: #ff6b6b;
+          font-size: 0.875rem;
+          margin-top: 0.25rem;
+        }
       `}</style>
 
       <div className="page-background">
@@ -105,14 +229,6 @@ function RegisterMentored() {
           >
             Cadastro de Mentorado
           </h2>
-          <button
-            type="button"
-            className="btn btn-outline-light mb-4"
-            onClick={() => navigator("/")}
-            data-aos="fade-left"
-          >
-            ← Voltar
-          </button>
           <form onSubmit={handleSubmit}>
             <div className="mb-3" data-aos="fade-up" data-aos-delay="100">
               <label htmlFor="name" className="form-label">
@@ -120,7 +236,9 @@ function RegisterMentored() {
               </label>
               <input
                 type="text"
-                className="form-control custom-input"
+                className={`form-control custom-input ${
+                  errors.name ? "is-invalid" : ""
+                }`}
                 id="name"
                 name="name"
                 placeholder="Ex: João da Silva"
@@ -128,14 +246,20 @@ function RegisterMentored() {
                 onChange={handleChange}
                 required
               />
+              {errors.name && (
+                <div className="error-message">{errors.name}</div>
+              )}
             </div>
+
             <div className="mb-3" data-aos="fade-up" data-aos-delay="200">
               <label htmlFor="mail" className="form-label">
                 E-mail
               </label>
               <input
                 type="email"
-                className="form-control custom-input"
+                className={`form-control custom-input ${
+                  errors.mail ? "is-invalid" : ""
+                }`}
                 id="mail"
                 name="mail"
                 placeholder="Ex: joao@email.com"
@@ -143,14 +267,20 @@ function RegisterMentored() {
                 onChange={handleChange}
                 required
               />
+              {errors.mail && (
+                <div className="error-message">{errors.mail}</div>
+              )}
             </div>
+
             <div className="mb-3" data-aos="fade-up" data-aos-delay="300">
               <label htmlFor="pwd" className="form-label">
                 Senha
               </label>
               <input
                 type="password"
-                className="form-control custom-input"
+                className={`form-control custom-input ${
+                  errors.pwd ? "is-invalid" : ""
+                }`}
                 id="pwd"
                 name="pwd"
                 placeholder="Crie uma senha segura"
@@ -158,40 +288,63 @@ function RegisterMentored() {
                 onChange={handleChange}
                 required
               />
+              {errors.pwd && <div className="error-message">{errors.pwd}</div>}
             </div>
+
             <div className="mb-4" data-aos="fade-up" data-aos-delay="600">
               <label htmlFor="areasOfInterest" className="form-label">
                 Áreas de Interesse
               </label>
-              <textarea
-                className="form-control custom-input"
+              <select
+                className={`form-control custom-input ${
+                  errors.areasOfInterest ? "is-invalid" : ""
+                }`}
                 id="areasOfInterest"
                 name="areasOfInterest"
-                rows="3"
-                placeholder="Ex: IA, UX Design, Cibersegurança..."
                 value={formData.areasOfInterest}
                 onChange={handleChange}
                 required
-              ></textarea>
+              >
+                <option value="">Selecione uma área</option>
+                {areasDeInteresse.map((area, index) => (
+                  <option key={index} value={area}>
+                    {area}
+                  </option>
+                ))}
+              </select>
+              {errors.areasOfInterest && (
+                <div className="error-message">{errors.areasOfInterest}</div>
+              )}
             </div>
 
-            <button
-              type="submit"
-              className="btn btn-gradient w-100 py-2 mb-3"
+            <div
+              className="d-flex justify-content-between mb-3"
               data-aos="zoom-in"
               data-aos-delay="700"
             >
-              <i className="bi bi-person-plus-fill me-2"></i>
-              Cadastrar Mentorado
-            </button>
+              <button
+                type="button"
+                className="btn btn-outline-light me-2"
+                onClick={() => navigate("/")}
+              >
+                ← Voltar
+              </button>
+              <button type="submit" className="btn btn-gradient px-4">
+                <i className="bi bi-person-plus-fill me-2"></i>
+                Cadastrar Mentorado
+              </button>
+            </div>
           </form>
 
-          {/* ✅ Botão "Ir para Login" abaixo do formulário */}
+          {errors.submit && (
+            <div className="text-center error-message mb-3">{errors.submit}</div>
+          )}
+
           <div className="text-center" data-aos="fade-up" data-aos-delay="800">
             <button
               type="button"
               className="btn btn-outline-info"
-              onClick={() => navigator("/login")}
+              onClick={() => navigate("/login")}
             >
               Já tem uma conta? Ir para Login
             </button>

@@ -5,16 +5,65 @@ import "aos/dist/aos.css";
 
 const SupportSupportList = () => {
   const [users, setUsers] = useState([]);
-  const navigator = useNavigate();
+  const navigate = useNavigate();
+  
+    function getSupports() {
+      fetch('https://backendsuporte-e5h4aqaxcnhkc8hk.brazilsouth-01.azurewebsites.net/api/v1/users/role/Suporte')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Erro na requisição: ' + response.status);
+          }
+          return response.json(); // converte a resposta para JSON
+        })
+        .then(data => {
+          console.log('Dados recebidos:', data);
+          setUsers(data);
+        })
+        .catch(error => {
+          console.error('Erro ao chamar API:', error);
+        });
+    }
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
+    getSupports();
   }, []);
 
   function addSupport() {
     console.log("sadl");
-    navigator("/users/add-support");
+    navigate("/users/add-support");
   }
+
+  function handleEdit(id) {
+    navigate(`/users/edit-support/${id}`);
+  }
+
+  async function handleDelete(id) {
+    try {
+      const response = await fetch(
+        `https://backendsuporte-e5h4aqaxcnhkc8hk.brazilsouth-01.azurewebsites.net/api/v1/users/${id}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+
+      if (!response.ok) {
+        console.error("Erro ao deletar usuário");
+        return;
+      }
+
+      getSupports(); // Atualiza lista após exclusão
+    } catch (error) {
+      console.error("Erro de conexão ao deletar:", error);
+    }
+  }
+
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    return date.toLocaleString('pt-BR');
+  };
+
 
   return (
     <div
@@ -25,7 +74,7 @@ const SupportSupportList = () => {
         <div className="mb-3" data-aos="fade-down" data-aos-delay="100">
           <button
             className="btn btn-outline-secondary d-flex align-items-center gap-2"
-            onClick={() => navigator("/users-support")}
+            onClick={() => navigate("/users-support")}
           >
             <i className="bi bi-arrow-left"></i> Voltar
           </button>
@@ -73,15 +122,16 @@ const SupportSupportList = () => {
                   <td>{user.id}</td>
                   <td>{user.name}</td>
                   <td>{user.email}</td>
-                  <td>{user.role}</td>
-                  <td>{user.createdAt}</td>
-                  <td>{user.updatedAt}</td>
+                  <td>{formatDate(user.createdAt)}</td>
+                  <td>{formatDate(user.updatedAt)}</td>
                   <td>
                     <div className="d-flex gap-2">
-                      <button className="btn btn-outline-info btn-sm">
+                      <button className="btn btn-outline-info btn-sm"
+                      onClick={() => handleEdit(user.id)}>
                         Editar
                       </button>
-                      <button className="btn btn-outline-danger btn-sm">
+                      <button className="btn btn-outline-danger btn-sm"
+                      onClick={() => handleDelete(user.id)}>
                         Excluir
                       </button>
                     </div>

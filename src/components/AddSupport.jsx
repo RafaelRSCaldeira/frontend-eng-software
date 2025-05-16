@@ -5,9 +5,10 @@ const AddSupport = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("Suporte");
 
   const { id } = useParams();
-  const navigator = useNavigate();
+  const navigate = useNavigate();
 
   const [errors, setErrors] = useState({
     name: "",
@@ -15,13 +16,83 @@ const AddSupport = () => {
     password: "",
   });
 
-  function pageTitle() {
-    return (
-      <h2 className="text-center text-light fw-bold mb-4">
-        {id ? "Atualizar Gerente" : "Cadastrar Novo Gerente"}
-      </h2>
-    );
-  }
+  const pageTitle = () => (
+    <h2 className="text-center text-light fw-bold mb-4">
+      {id ? "Atualizar Suporte" : "Cadastrar Novo Suporte"}
+    </h2>
+  );
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!name.trim()) newErrors.name = "Nome é obrigatório.";
+    if (!email.trim()) newErrors.email = "Email é obrigatório.";
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Email inválido.";
+    if (!password.trim()) newErrors.password = "Senha é obrigatória.";
+    return newErrors;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const validationErrors = validateForm();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
+
+    let  payload = { name, email, role};
+
+    if (!id) {
+      payload.password = password;
+    }
+
+    
+
+    try {
+      const url = id
+        ? `https://backendsuporte-e5h4aqaxcnhkc8hk.brazilsouth-01.azurewebsites.net/api/v1/users/${id}`
+        : `https://backendsuporte-e5h4aqaxcnhkc8hk.brazilsouth-01.azurewebsites.net/api/v1/users`;
+
+      const method = id ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Erro na API:", errorData);
+        return;
+      }
+
+      navigate("/users/support");
+    } catch (error) {
+      console.error("Erro ao enviar dados:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(
+            `https://backendsuporte-e5h4aqaxcnhkc8hk.brazilsouth-01.azurewebsites.net/api/v1/users/${id}`
+          );
+          if (!response.ok) throw new Error("Erro ao carregar dados");
+
+          const data = await response.json();
+
+          setName(data.name || "");
+          setEmail(data.email || "");
+          setPassword(data.password || "");
+        } catch (error) {
+          console.error("Erro:", error);
+        }
+      };
+
+      fetchData();
+    }
+  }, [id]);
 
   return (
     <>
@@ -54,7 +125,6 @@ const AddSupport = () => {
 
         .form-control.custom-input::placeholder {
           color: #ffffff;
-          opacity: 1; /* ou ajuste para 0.7 se quiser um leve cinza */
         }
 
         .form-control.custom-input:focus {
@@ -89,13 +159,12 @@ const AddSupport = () => {
         <div className="card custom-card p-4">
           {pageTitle()}
           <div className="card-body">
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label className="form-label">Nome</label>
                 <input
                   type="text"
-                  name="name"
-                  placeholder="Digite o nome do gerente"
+                  placeholder="Digite o nome do suporte"
                   className={`form-control custom-input ${
                     errors.name ? "is-invalid" : ""
                   }`}
@@ -111,8 +180,7 @@ const AddSupport = () => {
                 <label className="form-label">Email</label>
                 <input
                   type="email"
-                  name="email"
-                  placeholder="Digite o e-mail do gerente"
+                  placeholder="Digite o e-mail do suporte"
                   className={`form-control custom-input ${
                     errors.email ? "is-invalid" : ""
                   }`}
@@ -123,33 +191,33 @@ const AddSupport = () => {
                   <div className="invalid-feedback">{errors.email}</div>
                 )}
               </div>
+              {!id && (
+                <div className="mb-3">
+                  <label className="form-label text-light">Senha</label>
+                  <input
+                    type="password"
+                    className={`form-control custom-input ${
+                      errors.password ? "is-invalid" : ""
+                    }`}
+                    name="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Digite a senha"
+                  />
+                  {errors.password && (
+                    <div className="invalid-feedback">{errors.password}</div>
+                  )}
+                </div>
+              )}
 
-              <div className="mb-3">
-                <label className="form-label">Senha</label>
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Digite a senha"
-                  className={`form-control custom-input ${
-                    errors.password ? "is-invalid" : ""
-                  }`}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                {errors.password && (
-                  <div className="invalid-feedback">{errors.password}</div>
-                )}
-              </div>
-
-              <button className="btn btn-gradient w-100 mt-3"
-              onClick={() => navigator("/users/support")}>
+              <button type="submit" className="btn btn-gradient w-100 mt-3">
                 {id ? "Atualizar" : "Cadastrar"}
               </button>
 
               <button
                 type="button"
                 className="btn btn-outline-secondary mt-2 ms-2"
-                onClick={() => navigator("/users/support")}
+                onClick={() => navigate("/users/support")}
               >
                 ← Voltar
               </button>

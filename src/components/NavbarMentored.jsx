@@ -17,7 +17,7 @@ const NavbarMentored = () => (
             <Link className="nav-link" to="/mentored-manage">Gerenciar Mentorias</Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/mentored-review">Avaliar Mentorias</Link>
+            <Link className="nav-link" to="/mentored-review">Mentorias Concluídas</Link>
           </li>
         </ul>
       </div>

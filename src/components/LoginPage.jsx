@@ -5,7 +5,6 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 
 function LoginPage() {
-
   const location = useLocation();
   const role = location.state?.user || "none";
 
@@ -15,13 +14,15 @@ function LoginPage() {
     login(data);
   }
 
-  const navigator = useNavigate();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     mail: "",
     pwd: "",
-    role: ""
+    role: "",
   });
+
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
@@ -35,19 +36,41 @@ function LoginPage() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    handleLogin(formData);
-    console.log(role);
-    if(role === "Mentor") {
-      navigator(`/users-mentor`);
-    } else if(role === "Mentorado") {
-      console.log("sad");
-      navigator(`/users-mentored`);
-    } else if(role === "Suporte") {
-      navigator(`/users-support`);
-    } else {
-      navigator(`/`)
+    try {
+      const response = await fetch(
+        "https://backendsuporte-e5h4aqaxcnhkc8hk.brazilsouth-01.azurewebsites.net/api/v1/users/authenticate",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: formData.mail,
+            password: formData.pwd,
+            role: formData.role,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        setErrorMsg("Email ou senha inválidos");
+        return;
+      }
+
+      login({ email: formData.mail, role: formData.role });
+
+      if (formData.role === "Mentor") {
+        navigate(`/users-mentor`);
+      } else if (formData.role === "Mentorado") {
+        navigate(`/users-mentored`);
+      } else if (formData.role === "Suporte") {
+        navigate(`/users-support`);
+      } else {
+        navigate(`/`);
+      }
+    } catch (error) {
+      setErrorMsg("Erro de conexão, tente novamente.");
+      console.error(error);
     }
   };
 
@@ -121,14 +144,16 @@ function LoginPage() {
           >
             Login de {role}
           </h2>
-          <button
-            type="button"
-            className="btn btn-outline-light mb-4"
-            onClick={() => navigator("/login")}
-            data-aos="fade-left"
-          >
-            ← Voltar
-          </button>
+          {errorMsg && (
+            <div
+              className="alert alert-danger text-center"
+              role="alert"
+              data-aos="fade-down"
+              data-aos-delay="100"
+            >
+              {errorMsg}
+            </div>
+          )}
           <form onSubmit={handleSubmit}>
             <div className="mb-3" data-aos="fade-up" data-aos-delay="200">
               <label htmlFor="mail" className="form-label">
@@ -160,14 +185,23 @@ function LoginPage() {
                 required
               />
             </div>
-            <button
-              type="submit"
-              className="btn btn-gradient w-100 py-2 mt-3"
+            <div
+              className="d-flex justify-content-between mb-3"
               data-aos="zoom-in"
               data-aos-delay="700"
             >
-              Login
-            </button>
+              <button
+                type="button"
+                className="btn btn-outline-light me-2"
+                onClick={() => navigate("/login")}
+              >
+                ← Voltar
+              </button>
+              <button type="submit" className="btn btn-gradient px-4">
+                <i className="bi bi-person-plus-fill me-2"></i>
+                Login
+              </button>
+            </div>
           </form>
         </div>
       </div>

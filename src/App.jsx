@@ -106,6 +106,22 @@ function App() {
             } 
           />
           <Route 
+            path='/users/edit-support/:id' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <AddSupport />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/users/edit-mentored/:id' 
+            element={
+              <ProtectedRoute allowedRoles={["Suporte"]}>
+                <AddMentored />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
             path='/users/add-mentored' 
             element={
               <ProtectedRoute allowedRoles={["Suporte"]}>

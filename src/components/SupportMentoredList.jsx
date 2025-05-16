@@ -4,28 +4,60 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 
 const SupportMentoredList = () => {
+  const [loading, setLoading] = useState(true);
   const [mentoreds, setMentoreds] = useState([]);
-  const navigator = useNavigate();
+  const navigate = useNavigate();
+
+  const getMentoreds = () => {
+    fetch('https://backendsuporte-e5h4aqaxcnhkc8hk.brazilsouth-01.azurewebsites.net/api/v1/users/role/Mentorado')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erro na requisição: ' + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        setLoading(false);
+        setMentoreds(data);
+      })
+      .catch(error => {
+        console.error('Erro ao chamar API:', error);
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
-
-    // Dados de exemplo mockados — substitua pela API real
-    setMentoreds([
-      {
-        id: 1,
-        name: "João Silva",
-        email: "joao@email.com",
-        interests: ["Tecnologia da Informação", "Redes de Computadores"],
-        created_at: "2025-03-23T12:00:00Z",
-        updated_at: "2025-03-23T12:30:00Z",
-        rating: 3.0
-      }
-    ]);
+    getMentoreds();
   }, []);
 
-  const formatDate = (isoString) => {
-    const date = new Date(isoString);
+  const handleEdit = (id) => {
+    navigate(`/users/edit-mentored/${id}`);
+  };
+
+  async function handleDelete(id) {
+    try {
+      const response = await fetch(
+        `https://backendsuporte-e5h4aqaxcnhkc8hk.brazilsouth-01.azurewebsites.net/api/v1/users/${id}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+
+      if (!response.ok) {
+        console.error("Erro ao deletar usuário");
+        return;
+      }
+
+      getMentoreds(); // Atualiza lista após exclusão
+    } catch (error) {
+      console.error("Erro de conexão ao deletar:", error);
+    }
+  }
+
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
     return date.toLocaleString('pt-BR');
   };
 
@@ -38,7 +70,7 @@ const SupportMentoredList = () => {
         <div className="mb-3" data-aos="fade-down" data-aos-delay="100">
           <button
             className="btn btn-outline-secondary d-flex align-items-center gap-2"
-            onClick={() => navigator("/users-support")}
+            onClick={() => navigate("/users-support")}
           >
             <i className="bi bi-arrow-left"></i> Voltar
           </button>
@@ -50,8 +82,8 @@ const SupportMentoredList = () => {
         >
           <h2 className="fw-bold">Gerenciar Mentorado</h2>
           <button className="btn btn-outline-light"
-          onClick={() => navigator("/users/add-mentored")}>
-            + Novo Suporte
+            onClick={() => navigate("/users/add-mentored")}>
+            + Novo Mentorado
           </button>
         </div>
 
@@ -72,35 +104,44 @@ const SupportMentoredList = () => {
                 <th>ID</th>
                 <th>Nome</th>
                 <th>Email</th>
-                <th>Interesses</th>
-                <th>Avaliação</th>
+                <th>Interesse</th>
                 <th>Criado em</th>
                 <th>Atualizado em</th>
                 <th>Ações</th>
               </tr>
             </thead>
             <tbody>
-              {mentoreds.map((mentored) => (
-                <tr key={mentored.id}>
-                  <td>{mentored.id}</td>
-                  <td>{mentored.name}</td>
-                  <td>{mentored.email}</td>
-                  <td>{mentored.interests?.join(', ') || '-'}</td>
-                  <td>{mentored.rating?.toFixed(1) || '-'}</td>
-                  <td>{formatDate(mentored.created_at)}</td>
-                  <td>{formatDate(mentored.updated_at)}</td>
-                  <td>
-                    <div className="d-flex gap-2">
-                      <button className="btn btn-outline-info btn-sm">Editar</button>
-                      <button className="btn btn-outline-danger btn-sm">Excluir</button>
-                    </div>
+              {loading ? (
+                <tr>
+                  <td colSpan="7" className="text-center py-4">
+                    Carregando...
                   </td>
                 </tr>
-              ))}
-              {mentoreds.length === 0 && (
+              ) : mentoreds.length > 0 ? (
+                mentoreds.map((mentored) => (
+                  <tr key={mentored.id}>
+                    <td>{mentored.id}</td>
+                    <td>{mentored.name || '-'}</td>
+                    <td>{mentored.email || '-'}</td>
+                    <td>{mentored.areasOfActivity || '-'}</td>
+                    <td>{formatDate(mentored.createdAt)}</td>
+                    <td>{formatDate(mentored.updatedAt)}</td>
+                    <td>
+                      <div className="d-flex gap-2">
+                        <button className="btn btn-outline-info btn-sm" onClick={() => handleEdit(mentored.id)}>
+                          Editar
+                        </button>
+                        <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(mentored.id)}>
+                          Excluir
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
                 <tr>
-                  <td colSpan="8" className="text-center py-4">
-                    Nenhum suporte encontrado.
+                  <td colSpan="7" className="text-center py-4">
+                    Nenhum mentorado encontrado.
                   </td>
                 </tr>
               )}
